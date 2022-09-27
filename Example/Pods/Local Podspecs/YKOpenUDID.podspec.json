@@ -1,0 +1,22 @@
+{
+  "name": "YKOpenUDID",
+  "version": "0.1.0",
+  "summary": "A short description of YKOpenUDID.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/edward/YKOpenUDID",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "edward": "yanyongkun@linghit.com"
+  },
+  "source": {
+    "git": "https://github.com/edward/YKOpenUDID.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source_files": "YKOpenUDID/Classes/**/*"
+}

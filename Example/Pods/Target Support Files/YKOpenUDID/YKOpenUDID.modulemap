@@ -1,0 +1,6 @@
+framework module YKOpenUDID {
+  umbrella header "YKOpenUDID-umbrella.h"
+
+  export *
+  module * { export * }
+}
