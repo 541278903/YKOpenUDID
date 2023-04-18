@@ -22,7 +22,7 @@ pod 'YKOpenUDID'
 
 ## Author
 
-edward, yanyongkun@linghit.com
+edward, 1103484708@qq.com
 
 ## License
 
