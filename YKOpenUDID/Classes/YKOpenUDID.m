@@ -44,6 +44,10 @@
 
 #define OpenUDIDLog(fmt, ...)
 
+#define kYKOpenUDIDErrorNone 0
+#define kYKOpenUDIDErrorOptedOut 1
+#define kYKOpenUDIDErrorCompromised 2
+
 
 static NSString * kOpenUDIDSessionCache = nil;
 static NSString * const kOpenUDIDKey = @"OpenUDID";
@@ -208,7 +212,7 @@ static int const kOpenUDIDRedundancySlots = 100;
     if (kOpenUDIDSessionCache!=nil) {
         if (error!=nil)
             *error = [NSError errorWithDomain:kOpenUDIDDomain
-                                         code:kOpenUDIDErrorNone
+                                         code:kYKOpenUDIDErrorNone
                                      userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"OpenUDID in cache from first call",@"description", nil]];
         return kOpenUDIDSessionCache;
     }
@@ -367,7 +371,7 @@ static int const kOpenUDIDRedundancySlots = 100;
     //
     if (optedOut) {
         if (error!=nil) *error = [NSError errorWithDomain:kOpenUDIDDomain
-                                                     code:kOpenUDIDErrorOptedOut
+                                                     code:kYKOpenUDIDErrorOptedOut
                                                  userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Application with unique id %@ is opted-out from OpenUDID as of %@",appUID,optedOutDate],@"description", nil]];
         
         kOpenUDIDSessionCache = OpenUDIDReturnRetained(([NSString stringWithFormat:@"%040x", 0]));
@@ -379,11 +383,11 @@ static int const kOpenUDIDRedundancySlots = 100;
     if (error!=nil) {
         if (isCompromised)
             *error = [NSError errorWithDomain:kOpenUDIDDomain
-                                         code:kOpenUDIDErrorCompromised
+                                         code:kYKOpenUDIDErrorCompromised
                                      userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Found a discrepancy between stored OpenUDID (reliable) and redundant copies; one of the apps on the device is most likely corrupting the OpenUDID protocol",@"description", nil]];
         else
             *error = [NSError errorWithDomain:kOpenUDIDDomain
-                                         code:kOpenUDIDErrorNone
+                                         code:kYKOpenUDIDErrorNone
                                      userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"OpenUDID succesfully retrieved",@"description", nil]];
     }
     

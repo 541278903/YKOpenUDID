@@ -2,19 +2,10 @@
 //  YKOpenUDID.h
 //  YKOpenUDID
 //
-// initiated by Yann Lechelle (cofounder @Appsfire) on 8/28/11.
-// Copyright 2011 OpenUDID.org
-//
-// Main branches
-// iOS code: https://github.com/ylechelle/OpenUDID
 //
 
 
 #import <Foundation/Foundation.h>
-
-#define kOpenUDIDErrorNone 0
-#define kOpenUDIDErrorOptedOut 1
-#define kOpenUDIDErrorCompromised 2
 
 NS_ASSUME_NONNULL_BEGIN
 

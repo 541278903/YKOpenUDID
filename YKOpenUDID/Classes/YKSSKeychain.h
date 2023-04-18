@@ -11,68 +11,68 @@
 /** Error codes that can be returned in NSError objects. */
 typedef enum {
     /** No error. */
-    SSKeychainErrorNone = noErr,
+    YKSSKeychainErrorNone = noErr,
     
     /** Some of the arguments were invalid. */
-    SSKeychainErrorBadArguments = -1001,
+    YKSSKeychainErrorBadArguments = -1001,
     
     /** There was no password. */
-    SSKeychainErrorNoPassword = -1002,
+    YKSSKeychainErrorNoPassword = -1002,
     
     /** One or more parameters passed internally were not valid. */
-    SSKeychainErrorInvalidParameter = errSecParam,
+    YKSSKeychainErrorInvalidParameter = errSecParam,
     
     /** Failed to allocate memory. */
-    SSKeychainErrorFailedToAllocated = errSecAllocate,
+    YKSSKeychainErrorFailedToAllocated = errSecAllocate,
     
     /** No trust results are available. */
-    SSKeychainErrorNotAvailable = errSecNotAvailable,
+    YKSSKeychainErrorNotAvailable = errSecNotAvailable,
     
     /** Authorization/Authentication failed. */
-    SSKeychainErrorAuthorizationFailed = errSecAuthFailed,
+    YKSSKeychainErrorAuthorizationFailed = errSecAuthFailed,
     
     /** The item already exists. */
-    SSKeychainErrorDuplicatedItem = errSecDuplicateItem,
+    YKSSKeychainErrorDuplicatedItem = errSecDuplicateItem,
     
     /** The item cannot be found.*/
-    SSKeychainErrorNotFound = errSecItemNotFound,
+    YKSSKeychainErrorNotFound = errSecItemNotFound,
     
     /** Interaction with the Security Server is not allowed. */
-    SSKeychainErrorInteractionNotAllowed = errSecInteractionNotAllowed,
+    YKSSKeychainErrorInteractionNotAllowed = errSecInteractionNotAllowed,
     
     /** Unable to decode the provided data. */
-    SSKeychainErrorFailedToDecode = errSecDecode
-} SSKeychainErrorCode;
+    YKSSKeychainErrorFailedToDecode = errSecDecode
+} YKSSKeychainErrorCode;
 
-extern NSString *const kSSKeychainErrorDomain;
+extern NSString *const kYKSSKeychainErrorDomain;
 
 /** Account name. */
-extern NSString *const kSSKeychainAccountKey;
+extern NSString *const kYKSSKeychainAccountKey;
 
 /**
  Time the item was created.
  
  The value will be a string.
  */
-extern NSString *const kSSKeychainCreatedAtKey;
+extern NSString *const kYKSSKeychainCreatedAtKey;
 
 /** Item class. */
-extern NSString *const kSSKeychainClassKey;
+extern NSString *const kYKSSKeychainClassKey;
 
 /** Item description. */
-extern NSString *const kSSKeychainDescriptionKey;
+extern NSString *const kYKSSKeychainDescriptionKey;
 
 /** Item label. */
-extern NSString *const kSSKeychainLabelKey;
+extern NSString *const kYKSSKeychainLabelKey;
 
 /** Time the item was last modified.
  
  The value will be a string.
  */
-extern NSString *const kSSKeychainLastModifiedKey;
+extern NSString *const kYKSSKeychainLastModifiedKey;
 
 /** Where the item was created. */
-extern NSString *const kSSKeychainWhereKey;
+extern NSString *const kYKSSKeychainWhereKey;
 
 /**
  Simple wrapper for accessing accounts, getting passwords, setting passwords, and deleting passwords using the system

@@ -7,15 +7,15 @@
 
 #import "YKSSKeychain.h"
 
-NSString *const kSSKeychainErrorDomain = @"com.samsoffes.sskeychain";
+NSString *const kYKSSKeychainErrorDomain = @"com.yk.sskeychain";
 
-NSString *const kSSKeychainAccountKey = @"acct";
-NSString *const kSSKeychainCreatedAtKey = @"cdat";
-NSString *const kSSKeychainClassKey = @"labl";
-NSString *const kSSKeychainDescriptionKey = @"desc";
-NSString *const kSSKeychainLabelKey = @"labl";
-NSString *const kSSKeychainLastModifiedKey = @"mdat";
-NSString *const kSSKeychainWhereKey = @"svce";
+NSString *const kYKSSKeychainAccountKey = @"acct";
+NSString *const kYKSSKeychainCreatedAtKey = @"cdat";
+NSString *const kYKSSKeychainClassKey = @"labl";
+NSString *const kYKSSKeychainDescriptionKey = @"desc";
+NSString *const kYKSSKeychainLabelKey = @"labl";
+NSString *const kYKSSKeychainLastModifiedKey = @"mdat";
+NSString *const kYKSSKeychainWhereKey = @"svce";
 
 #if __IPHONE_4_0 && TARGET_OS_IPHONE
 CFTypeRef SSKeychainAccessibilityType = NULL;
@@ -45,7 +45,7 @@ CFTypeRef SSKeychainAccessibilityType = NULL;
 
 
 + (NSArray *)accountsForService:(nullable NSString *)service error:(NSError **)error {
-    OSStatus status = SSKeychainErrorBadArguments;
+    OSStatus status = YKSSKeychainErrorBadArguments;
     NSMutableDictionary *query = [self _queryForService:service account:nil];
 #if __has_feature(objc_arc)
     [query setObject:(__bridge id)kCFBooleanTrue forKey:(__bridge id)kSecReturnAttributes];
@@ -62,7 +62,7 @@ CFTypeRef SSKeychainAccessibilityType = NULL;
     status = SecItemCopyMatching((CFDictionaryRef)query, &result);
 #endif
     if (status != noErr && error != NULL) {
-        *error = [NSError errorWithDomain:kSSKeychainErrorDomain code:status userInfo:nil];
+        *error = [NSError errorWithDomain:kYKSSKeychainErrorDomain code:status userInfo:nil];
         return nil;
     }
     
@@ -101,10 +101,10 @@ CFTypeRef SSKeychainAccessibilityType = NULL;
 
 
 + (NSData *)passwordDataForService:(NSString *)service account:(NSString *)account error:(NSError **)error {
-    OSStatus status = SSKeychainErrorBadArguments;
+    OSStatus status = YKSSKeychainErrorBadArguments;
     if (!service || !account) {
         if (error) {
-            *error = [NSError errorWithDomain:kSSKeychainErrorDomain code:status userInfo:nil];
+            *error = [NSError errorWithDomain:kYKSSKeychainErrorDomain code:status userInfo:nil];
         }
         return nil;
     }
@@ -122,7 +122,7 @@ CFTypeRef SSKeychainAccessibilityType = NULL;
 #endif
     
     if (status != noErr && error != NULL) {
-        *error = [NSError errorWithDomain:kSSKeychainErrorDomain code:status userInfo:nil];
+        *error = [NSError errorWithDomain:kYKSSKeychainErrorDomain code:status userInfo:nil];
         return nil;
     }
     
@@ -142,7 +142,7 @@ CFTypeRef SSKeychainAccessibilityType = NULL;
 
 
 + (BOOL)deletePasswordForService:(NSString *)service account:(NSString *)account error:(NSError **)error {
-    OSStatus status = SSKeychainErrorBadArguments;
+    OSStatus status = YKSSKeychainErrorBadArguments;
     if (service && account) {
         NSMutableDictionary *query = [self _queryForService:service account:account];
 #if __has_feature(objc_arc)
@@ -152,7 +152,7 @@ CFTypeRef SSKeychainAccessibilityType = NULL;
 #endif
     }
     if (status != noErr && error != NULL) {
-        *error = [NSError errorWithDomain:kSSKeychainErrorDomain code:status userInfo:nil];
+        *error = [NSError errorWithDomain:kYKSSKeychainErrorDomain code:status userInfo:nil];
     }
     return (status == noErr);
     
@@ -178,7 +178,7 @@ CFTypeRef SSKeychainAccessibilityType = NULL;
 
 
 + (BOOL)setPasswordData:(NSData *)password forService:(NSString *)service account:(NSString *)account error:(NSError **)error {
-    OSStatus status = SSKeychainErrorBadArguments;
+    OSStatus status = YKSSKeychainErrorBadArguments;
     if (password && service && account) {
         [self deletePasswordForService:service account:account];
         NSMutableDictionary *query = [self _queryForService:service account:account];
@@ -205,7 +205,7 @@ CFTypeRef SSKeychainAccessibilityType = NULL;
 #endif
     }
     if (status != noErr && error != NULL) {
-        *error = [NSError errorWithDomain:kSSKeychainErrorDomain code:status userInfo:nil];
+        *error = [NSError errorWithDomain:kYKSSKeychainErrorDomain code:status userInfo:nil];
     }
     return (status == noErr);
 }
