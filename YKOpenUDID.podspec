@@ -2,7 +2,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'YKOpenUDID'
-  s.version          = '1.1.1'
+  s.version          = '1.1.2'
   s.summary          = 'iOS统一获取DeviceId'
 
   s.description      = <<-DESC

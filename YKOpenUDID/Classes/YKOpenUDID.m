@@ -42,22 +42,22 @@
 #import <AppKit/NSPasteboard.h>
 #endif
 
-#define OpenUDIDLog(fmt, ...)
+#define YKOpenUDIDLog(fmt, ...)
 
 #define kYKOpenUDIDErrorNone 0
 #define kYKOpenUDIDErrorOptedOut 1
 #define kYKOpenUDIDErrorCompromised 2
 
 
-static NSString * kOpenUDIDSessionCache = nil;
-static NSString * const kOpenUDIDKey = @"OpenUDID";
-static NSString * const kOpenUDIDSlotKey = @"OpenUDID_slot";
-static NSString * const kOpenUDIDAppUIDKey = @"OpenUDID_appUID";
-static NSString * const kOpenUDIDTSKey = @"OpenUDID_createdTS";
-static NSString * const kOpenUDIDOOTSKey = @"OpenUDID_optOutTS";
-static NSString * const kOpenUDIDDomain = @"org.OpenUDID";
-static NSString * const kOpenUDIDSlotPBPrefix = @"org.OpenUDID.slot.";
-static int const kOpenUDIDRedundancySlots = 100;
+static NSString * kYKOpenUDIDSessionCache = nil;
+static NSString * const kYKOpenUDIDKey = @"YKOpenUDID";
+static NSString * const kYKOpenUDIDSlotKey = @"YKOpenUDID_slot";
+static NSString * const kYKOpenUDIDAppUIDKey = @"YKOpenUDID_appUID";
+static NSString * const kYKOpenUDIDTSKey = @"YKOpenUDID_createdTS";
+static NSString * const kYKOpenUDIDOOTSKey = @"YKOpenUDID_optOutTS";
+static NSString * const kYKOpenUDIDDomain = @"org.YK.OpenUDID";
+static NSString * const kYKOpenUDIDSlotPBPrefix = @"org.YK.OpenUDID.slot.";
+static int const kYKOpenUDIDRedundancySlots = 100;
 
 
 @interface YKOpenUDID ()
@@ -79,7 +79,7 @@ static int const kOpenUDIDRedundancySlots = 100;
 //
 + (void) _setDict:(id)dict forPasteboard:(id)pboard {
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-    [pboard setData:[NSKeyedArchiver archivedDataWithRootObject:dict] forPasteboardType:kOpenUDIDDomain];
+    [pboard setData:[NSKeyedArchiver archivedDataWithRootObject:dict] forPasteboardType:kYKOpenUDIDDomain];
 #else
     [pboard setData:[NSKeyedArchiver archivedDataWithRootObject:dict] forType:kOpenUDIDDomain];
 #endif
@@ -90,7 +90,7 @@ static int const kOpenUDIDRedundancySlots = 100;
 //
 + (NSMutableDictionary*) _getDictFromPasteboard:(id)pboard {
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-    id item = [pboard dataForPasteboardType:kOpenUDIDDomain];
+    id item = [pboard dataForPasteboardType:kYKOpenUDIDDomain];
 #else
     id item = [pboard dataForType:kOpenUDIDDomain];
 #endif
@@ -98,7 +98,7 @@ static int const kOpenUDIDRedundancySlots = 100;
         @try{
             item = [NSKeyedUnarchiver unarchiveObjectWithData:item];
         } @catch(NSException* e) {
-            OpenUDIDLog(@"Unable to unarchive item %@ on pasteboard!", [pboard name]);
+            YKOpenUDIDLog(@"Unable to unarchive item %@ on pasteboard!", [pboard name]);
             item = nil;
         }
     }
@@ -209,19 +209,19 @@ static int const kOpenUDIDRedundancySlots = 100;
 
 + (NSString*) getOpenValueWithError:(NSError **)error {
     
-    if (kOpenUDIDSessionCache!=nil) {
+    if (kYKOpenUDIDSessionCache!=nil) {
         if (error!=nil)
-            *error = [NSError errorWithDomain:kOpenUDIDDomain
+            *error = [NSError errorWithDomain:kYKOpenUDIDDomain
                                          code:kYKOpenUDIDErrorNone
                                      userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"OpenUDID in cache from first call",@"description", nil]];
-        return kOpenUDIDSessionCache;
+        return kYKOpenUDIDSessionCache;
     }
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
     // The AppUID will uniquely identify this app within the pastebins
     //
-    NSString * appUID = [defaults objectForKey:kOpenUDIDAppUIDKey];
+    NSString * appUID = [defaults objectForKey:kYKOpenUDIDAppUIDKey];
     if(appUID == nil)
     {
         // generate a new uuid and store it in user defaults
@@ -245,36 +245,36 @@ static int const kOpenUDIDRedundancySlots = 100;
     // Do we have a local copy of the OpenUDID dictionary?
     // This local copy contains a copy of the openUDID, myRedundancySlotPBid (and unused in this block, the local bundleid, and the timestamp)
     //
-    id localDict = [defaults objectForKey:kOpenUDIDKey];
+    id localDict = [defaults objectForKey:kYKOpenUDIDKey];
     if ([localDict isKindOfClass:[NSDictionary class]]) {
         localDict = [NSMutableDictionary dictionaryWithDictionary:localDict]; // we might need to set/overwrite the redundancy slot
-        openUDID = [localDict objectForKey:kOpenUDIDKey];
-        myRedundancySlotPBid = [localDict objectForKey:kOpenUDIDSlotKey];
-        optedOutDate = [localDict objectForKey:kOpenUDIDOOTSKey];
+        openUDID = [localDict objectForKey:kYKOpenUDIDKey];
+        myRedundancySlotPBid = [localDict objectForKey:kYKOpenUDIDSlotKey];
+        optedOutDate = [localDict objectForKey:kYKOpenUDIDOOTSKey];
         optedOut = optedOutDate!=nil;
-        OpenUDIDLog(@"localDict = %@",localDict);
+        YKOpenUDIDLog(@"localDict = %@",localDict);
     }
     
     // Here we go through a sequence of slots, each of which being a UIPasteboard created by each participating app
     // The idea behind this is to both multiple and redundant representations of OpenUDIDs, as well as serve as placeholder for potential opt-out
     //
     NSString* availableSlotPBid = nil;
-    NSMutableDictionary* frequencyDict = [NSMutableDictionary dictionaryWithCapacity:kOpenUDIDRedundancySlots];
-    for (int n=0; n<kOpenUDIDRedundancySlots; n++) {
-        NSString* slotPBid = [NSString stringWithFormat:@"%@%d",kOpenUDIDSlotPBPrefix,n];
+    NSMutableDictionary* frequencyDict = [NSMutableDictionary dictionaryWithCapacity:kYKOpenUDIDRedundancySlots];
+    for (int n=0; n<kYKOpenUDIDRedundancySlots; n++) {
+        NSString* slotPBid = [NSString stringWithFormat:@"%@%d",kYKOpenUDIDSlotPBPrefix,n];
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
         UIPasteboard* slotPB = [UIPasteboard pasteboardWithName:slotPBid create:NO];
 #else
         NSPasteboard* slotPB = [NSPasteboard pasteboardWithName:slotPBid];
 #endif
-        OpenUDIDLog(@"SlotPB name = %@",slotPBid);
+        YKOpenUDIDLog(@"SlotPB name = %@",slotPBid);
         if (slotPB==nil) {
             // assign availableSlotPBid to be the first one available
             if (availableSlotPBid==nil) availableSlotPBid = slotPBid;
         } else {
             NSDictionary* dict = [YKOpenUDID _getDictFromPasteboard:slotPB];
-            NSString* oudid = [dict objectForKey:kOpenUDIDKey];
-            OpenUDIDLog(@"SlotPB dict = %@",dict);
+            NSString* oudid = [dict objectForKey:kYKOpenUDIDKey];
+            YKOpenUDIDLog(@"SlotPB dict = %@",dict);
             if (oudid==nil) {
                 // availableSlotPBid could inside a non null slot where no oudid can be found
                 if (availableSlotPBid==nil) availableSlotPBid = slotPBid;
@@ -285,12 +285,12 @@ static int const kOpenUDIDRedundancySlots = 100;
             }
             // if we have a match with the app unique id,
             // then let's look if the external UIPasteboard representation marks this app as OptedOut
-            NSString* gid = [dict objectForKey:kOpenUDIDAppUIDKey];
+            NSString* gid = [dict objectForKey:kYKOpenUDIDAppUIDKey];
             if (gid!=nil && [gid isEqualToString:appUID]) {
                 myRedundancySlotPBid = slotPBid;
                 // the local dictionary is prime on the opt-out subject, so ignore if already opted-out locally
                 if (optedOut) {
-                    optedOutDate = [dict objectForKey:kOpenUDIDOOTSKey];
+                    optedOutDate = [dict objectForKey:kYKOpenUDIDOOTSKey];
                     optedOut = optedOutDate!=nil;
                 }
             }
@@ -302,7 +302,7 @@ static int const kOpenUDIDRedundancySlots = 100;
     //
     NSArray* arrayOfUDIDs = [frequencyDict keysSortedByValueUsingSelector:@selector(compare:)];
     NSString* mostReliableOpenUDID = (arrayOfUDIDs!=nil && [arrayOfUDIDs count]>0)? [arrayOfUDIDs lastObject] : nil;
-    OpenUDIDLog(@"Freq Dict = %@\nMost reliable %@",frequencyDict,mostReliableOpenUDID);
+    YKOpenUDIDLog(@"Freq Dict = %@\nMost reliable %@",frequencyDict,mostReliableOpenUDID);
     
     // if openUDID was not retrieved from the local preferences, then let's try to get it from the frequency dictionary above
     //
@@ -321,10 +321,10 @@ static int const kOpenUDIDRedundancySlots = 100;
         //
         if (localDict==nil) {
             localDict = [NSMutableDictionary dictionaryWithCapacity:4];
-            [localDict setObject:openUDID forKey:kOpenUDIDKey];
-            [localDict setObject:appUID forKey:kOpenUDIDAppUIDKey];
-            [localDict setObject:[NSDate date] forKey:kOpenUDIDTSKey];
-            if (optedOut) [localDict setObject:optedOutDate forKey:kOpenUDIDTSKey];
+            [localDict setObject:openUDID forKey:kYKOpenUDIDKey];
+            [localDict setObject:appUID forKey:kYKOpenUDIDAppUIDKey];
+            [localDict setObject:[NSDate date] forKey:kYKOpenUDIDTSKey];
+            if (optedOut) [localDict setObject:optedOutDate forKey:kYKOpenUDIDTSKey];
             saveLocalDictToDefaults = YES;
         }
     }
@@ -337,7 +337,7 @@ static int const kOpenUDIDRedundancySlots = 100;
     
     // Here we store in the available PB slot, if applicable
     //
-    OpenUDIDLog(@"Available Slot %@ Existing Slot %@",availableSlotPBid,myRedundancySlotPBid);
+    YKOpenUDIDLog(@"Available Slot %@ Existing Slot %@",availableSlotPBid,myRedundancySlotPBid);
     if (availableSlotPBid!=nil && (myRedundancySlotPBid==nil || [availableSlotPBid isEqualToString:myRedundancySlotPBid])) {
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
         UIPasteboard* slotPB = [UIPasteboard pasteboardWithName:availableSlotPBid create:YES];
@@ -349,7 +349,7 @@ static int const kOpenUDIDRedundancySlots = 100;
         // save slotPBid to the defaults, and remember to save later
         //
         if (localDict) {
-            [localDict setObject:availableSlotPBid forKey:kOpenUDIDSlotKey];
+            [localDict setObject:availableSlotPBid forKey:kYKOpenUDIDSlotKey];
             saveLocalDictToDefaults = YES;
         }
         
@@ -362,7 +362,7 @@ static int const kOpenUDIDRedundancySlots = 100;
     // Save the dictionary locally if applicable
     //
     if (localDict && saveLocalDictToDefaults)
-        [defaults setObject:localDict forKey:kOpenUDIDKey];
+        [defaults setObject:localDict forKey:kYKOpenUDIDKey];
     
     // If the UIPasteboard external representation marks this app as opted-out, then to respect privacy, we return the ZERO OpenUDID, a sequence of 40 zeros...
     // This is a *new* case that developers have to deal with. Unlikely, statistically low, but still.
@@ -370,29 +370,29 @@ static int const kOpenUDIDRedundancySlots = 100;
     // This ratio will let them extrapolate convertion ratios more accurately.
     //
     if (optedOut) {
-        if (error!=nil) *error = [NSError errorWithDomain:kOpenUDIDDomain
+        if (error!=nil) *error = [NSError errorWithDomain:kYKOpenUDIDDomain
                                                      code:kYKOpenUDIDErrorOptedOut
                                                  userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"Application with unique id %@ is opted-out from OpenUDID as of %@",appUID,optedOutDate],@"description", nil]];
         
-        kOpenUDIDSessionCache = OpenUDIDReturnRetained(([NSString stringWithFormat:@"%040x", 0]));
-        return kOpenUDIDSessionCache;
+        kYKOpenUDIDSessionCache = OpenUDIDReturnRetained(([NSString stringWithFormat:@"%040x", 0]));
+        return kYKOpenUDIDSessionCache;
     }
     
     // return the well earned openUDID!
     //
     if (error!=nil) {
         if (isCompromised)
-            *error = [NSError errorWithDomain:kOpenUDIDDomain
+            *error = [NSError errorWithDomain:kYKOpenUDIDDomain
                                          code:kYKOpenUDIDErrorCompromised
                                      userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"Found a discrepancy between stored OpenUDID (reliable) and redundant copies; one of the apps on the device is most likely corrupting the OpenUDID protocol",@"description", nil]];
         else
-            *error = [NSError errorWithDomain:kOpenUDIDDomain
+            *error = [NSError errorWithDomain:kYKOpenUDIDDomain
                                          code:kYKOpenUDIDErrorNone
                                      userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"OpenUDID succesfully retrieved",@"description", nil]];
     }
     
-    kOpenUDIDSessionCache = OpenUDIDReturnRetained(openUDID);
-    return kOpenUDIDSessionCache;
+    kYKOpenUDIDSessionCache = OpenUDIDReturnRetained(openUDID);
+    return kYKOpenUDIDSessionCache;
 }
 
 + (void) setOptOut:(BOOL)optOutValue {
@@ -403,7 +403,7 @@ static int const kOpenUDIDRedundancySlots = 100;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
     // load the dictionary from local cache or create one
-    id dict = [defaults objectForKey:kOpenUDIDKey];
+    id dict = [defaults objectForKey:kYKOpenUDIDKey];
     if ([dict isKindOfClass:[NSDictionary class]]) {
         dict = [NSMutableDictionary dictionaryWithDictionary:dict];
     } else {
@@ -412,17 +412,17 @@ static int const kOpenUDIDRedundancySlots = 100;
     
     // set the opt-out date or remove key, according to parameter
     if (optOutValue)
-        [dict setObject:[NSDate date] forKey:kOpenUDIDOOTSKey];
+        [dict setObject:[NSDate date] forKey:kYKOpenUDIDOOTSKey];
     else
-        [dict removeObjectForKey:kOpenUDIDOOTSKey];
+        [dict removeObjectForKey:kYKOpenUDIDOOTSKey];
     
     // store the dictionary locally
-    [defaults setObject:dict forKey:kOpenUDIDKey];
+    [defaults setObject:dict forKey:kYKOpenUDIDKey];
     
-    OpenUDIDLog(@"Local dict after opt-out = %@",dict);
+    YKOpenUDIDLog(@"Local dict after opt-out = %@",dict);
     
     // reset memory cache
-    kOpenUDIDSessionCache = nil;
+    kYKOpenUDIDSessionCache = nil;
     
 }
 

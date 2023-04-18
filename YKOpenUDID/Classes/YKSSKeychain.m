@@ -18,7 +18,7 @@ NSString *const kYKSSKeychainLastModifiedKey = @"mdat";
 NSString *const kYKSSKeychainWhereKey = @"svce";
 
 #if __IPHONE_4_0 && TARGET_OS_IPHONE
-CFTypeRef SSKeychainAccessibilityType = NULL;
+CFTypeRef YKSSKeychainAccessibilityType = NULL;
 #endif
 
 @interface YKSSKeychain ()
@@ -189,7 +189,7 @@ CFTypeRef SSKeychainAccessibilityType = NULL;
 #endif
         
 #if __IPHONE_4_0 && TARGET_OS_IPHONE
-        if (SSKeychainAccessibilityType) {
+        if (YKSSKeychainAccessibilityType) {
 #if __has_feature(objc_arc)
             [query setObject:(id)[self accessibilityType] forKey:(__bridge id)kSecAttrAccessible];
 #else
@@ -215,16 +215,16 @@ CFTypeRef SSKeychainAccessibilityType = NULL;
 
 #if __IPHONE_4_0 && TARGET_OS_IPHONE
 + (CFTypeRef)accessibilityType {
-    return SSKeychainAccessibilityType;
+    return YKSSKeychainAccessibilityType;
 }
 
 
 + (void)setAccessibilityType:(CFTypeRef)accessibilityType {
     CFRetain(accessibilityType);
-    if (SSKeychainAccessibilityType) {
-        CFRelease(SSKeychainAccessibilityType);
+    if (YKSSKeychainAccessibilityType) {
+        CFRelease(YKSSKeychainAccessibilityType);
     }
-    SSKeychainAccessibilityType = accessibilityType;
+    YKSSKeychainAccessibilityType = accessibilityType;
 }
 #endif
 

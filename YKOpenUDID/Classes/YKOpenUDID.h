@@ -2,7 +2,7 @@
 //  YKOpenUDID.h
 //  YKOpenUDID
 //
-//
+// version 1.1.2
 
 
 #import <Foundation/Foundation.h>
